@@ -247,6 +247,7 @@ export default function ReferralDataGrid(propsReferralDataGrid: any) {
 
     const handleDownloadCv = (params: any) => {
         const referralId = params.id;
+        snackbar.info('Downloading CV...', 'Referral');
         downloadCvReferral({
             referralId,
             token
@@ -287,25 +288,15 @@ export default function ReferralDataGrid(propsReferralDataGrid: any) {
         updateReferral({
             referral: {
                 id: statusToChange.referral.id,
-                status: statusToChange.newStatus
+                status: statusToChange.newStatus,
+                referralComment: note
             },
             token
         }).then(() => {
-            createReferralComment({
-                referral: {
-                    id: statusToChange.referral.id,
-                    referralStatusId: statusToChange.newStatus,
-                    comment: note
-                },
-                token
-            }).then(() => {
-                setNote('');
-                snackbar.success('Referral Updated', 'Referral');
-                setIsCommentDialogOpen(false);
-                setIsChangeStatusDialogOpen(false);
-            }).catch(({ response }) => {
-                snackbar.error('Error creating new note. Try again', 'Referral');
-            });
+            setNote('');
+            setIsCommentDialogOpen(false);
+            setIsChangeStatusDialogOpen(false);
+            snackbar.success('Referral Updated', 'Referral');
         }).catch(({ response }) => {
             if (response.status === 401) {
                 snackbar.error('Unauthorized', 'Referral');
@@ -755,7 +746,6 @@ export default function ReferralDataGrid(propsReferralDataGrid: any) {
                         onClick={() => {
                             setNote('');
                             setStatusToChange({});
-                            snackbar.error('Status change not made', 'Referral');
                             setIsCommentDialogOpen(false);
                             handleFetchReferrals();
                         }}

@@ -5,14 +5,15 @@ import {baseApiPath, downloadCv, referralComments, referralsBasePath} from "../e
 type chipColor = "primary" | "success" | "error" | "default" | "secondary" | "info" | "warning" | undefined;
 export const statusOptions: ({ value: number; color: chipColor; label: string })[] = [
     { value: 0, label: 'Select one', color: 'default', },
-    { value: 1, label: 'Applied', color: 'primary', },
-    { value: 2, label: 'Recruitment', color: 'primary', },
-    { value: 3, label: 'Interviewing', color: 'primary', },
-    { value: 4, label: 'Managers', color: 'primary', },
-    { value: 5, label: 'Client', color: 'primary', },
-    { value: 6, label: 'Offer', color: 'success', },
-    { value: 7, label: 'Hiring', color: 'success', },
-    { value: 8, label: 'Failed', color: 'error', }
+    { value: 1, label: 'Referred', color: 'primary', },
+    { value: 2, label: 'Contacted by recruiter', color: 'primary', },
+    { value: 3, label: 'Technical Interview', color: 'primary', },
+    { value: 4, label: 'Managers Review', color: 'primary', },
+    { value: 5, label: 'Client Review', color: 'primary', },
+    { value: 6, label: 'Offer Stage', color: 'success', },
+    { value: 7, label: 'Onboarding', color: 'success', },
+    { value: 8, label: 'Future Consideration', color: 'primary', },
+    { value: 9, label: 'Rejected', color: 'error', }
 ];
 
 const fetchAllReferrals: any = async (token: string) => {
@@ -193,7 +194,8 @@ const updateReferral = async ({referral, token}: { referral: any; token: string 
         phone_number: referral.phoneNumber,
         referral_status_id: referral.status,
         ta_recruiter: referral.taRecruiter,
-        file: referral.cvFile
+        file: referral.cvFile,
+        referral_comment: referral.referralComment
     }
 
     Object.keys(dataRequest).forEach(key => {

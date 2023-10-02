@@ -15,7 +15,7 @@ import {
     Grid,
     Box,
     Chip,
-    ListItem, CardContent, Card, IconButton
+    ListItem, CardContent, Card, IconButton, CircularProgress
 } from '@mui/material';
 import { useFormik } from "formik";
 import * as Yup from 'yup';
@@ -34,6 +34,7 @@ interface ReferralFormProps {
         cv_url: string;
         tech_stacks: string[];
         comments: string;
+        status: number;
     };
 }
 
@@ -43,9 +44,9 @@ const ReferralForm = (props: ReferralFormProps = {}) => {
     const [techStack, setTechStack] = useState<string>('');
     const [isUpdating, setIsUpdating] = useState<boolean>(false);
     const [isCvRequired, setIsCvRequired] = useState<boolean>(true);
-    const { createReferral } = useCreateReferrals();
-    const { updateReferral } = useUpdateReferral();
-    const { downloadCvReferral } = useDownloadCvReferral();
+    const { createReferral, isLoadingCreateReferrals } = useCreateReferrals();
+    const { updateReferral, isLoadingUpdateReferrals } = useUpdateReferral();
+    const { downloadCvReferral, isLoadingDownloadCvReferral } = useDownloadCvReferral();
     const snackbar = useSnackbar();
     const history = useHistory();
 
@@ -59,7 +60,8 @@ const ReferralForm = (props: ReferralFormProps = {}) => {
             cvUrl: null,
             cvFile: null,
             cvFileInput: '',
-            comments: ''
+            comments: '',
+            status: 0
         },
         validationSchema: Yup.object({
             id: Yup.number(),
@@ -122,7 +124,8 @@ const ReferralForm = (props: ReferralFormProps = {}) => {
                 cvUrl: props.data.cv_url,
                 cvFileInput: '',
                 comments: props.data.comments,
-                phoneNumber: props.data.phone_number
+                phoneNumber: props.data.phone_number,
+                status: props.data.status
             });
         }
     }, []);
@@ -240,13 +243,16 @@ const ReferralForm = (props: ReferralFormProps = {}) => {
                         label="CV file"
                         variant="outlined"
                         />
-                        <IconButton
-                            color="primary"
-                            component="button"
-                            onClick={() => handleDownloadCv({referralId: saveReferralFormik.values.id, fileName: saveReferralFormik.values.cvUrl})}
-                        >
-                            <DownloadOutlined />
-                        </IconButton>
+                        { isLoadingDownloadCvReferral && (<CircularProgress size={35} />) }
+                        { !isLoadingDownloadCvReferral && (
+                            <IconButton
+                                color="primary"
+                                component="button"
+                                onClick={() => handleDownloadCv({referralId: saveReferralFormik.values.id, fileName: saveReferralFormik.values.cvUrl})}
+                            >
+                                <DownloadOutlined />
+                            </IconButton>
+                        )}
                         <IconButton
                             color="error"
                             component="button"
@@ -366,6 +372,13 @@ const ReferralForm = (props: ReferralFormProps = {}) => {
                     />
                 </Grid>
             </Grid>
+            { (isLoadingCreateReferrals || isLoadingUpdateReferrals) && (
+                <div>
+                    <br />
+                    <CircularProgress size={100} />
+                </div>
+            )}
+            { (!isLoadingCreateReferrals && !isLoadingUpdateReferrals) && (
             <Box sx={{ width: '350px', display: 'flex', justifyContent: 'space-around', padding: '20px' }}>
                 <Button type='reset' variant="contained" endIcon={<UndoOutlined />}
                     onClick={() => history.push('/referrals')}>
@@ -383,6 +396,7 @@ const ReferralForm = (props: ReferralFormProps = {}) => {
                     {saveReferralFormik.values.id === 0 ? 'Save' : 'Update'}
                 </Button>
             </Box>
+            )}
         </Box>
     );
 }
