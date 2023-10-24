@@ -38,6 +38,16 @@ interface ReferralFormProps {
     };
 }
 
+const DEFAULT_ERROR : string = "Something went wrong";
+
+function getErrorFromResponse(errors: Object | undefined): string {
+    if (errors === undefined || Object.keys(errors).length === 0) {
+        return DEFAULT_ERROR;
+    }
+
+    return Object.values(errors)[0];
+}
+
 const ReferralForm = (props: ReferralFormProps = {}) => {
     const [token] = useLocalStorage('token', '');
     const [tags, setTags] = useState<string[]>([]);
@@ -86,7 +96,7 @@ const ReferralForm = (props: ReferralFormProps = {}) => {
                     snackbar.success('Referral updated successfully');
                     history.push('/referrals');
                 }).catch(e => {
-                    snackbar.error('Something went wrong');
+                    snackbar.error(getErrorFromResponse(e.response?.data?.errors));
                     console.log(e);
                 });
             } else {
@@ -101,7 +111,7 @@ const ReferralForm = (props: ReferralFormProps = {}) => {
                     snackbar.success('Referral created successfully');
                     history.push('/referrals');
                 }).catch(e => {
-                    snackbar.error('Something went wrong');
+                    snackbar.error(getErrorFromResponse(e.response?.data?.errors));
                     console.log(e);
                 });
             }
